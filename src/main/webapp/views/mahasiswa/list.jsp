@@ -95,17 +95,17 @@
                     <span class="ml-auto bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">${fn:length(listMahasiswa)}</span>
                 </a>
                 
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300">
+                <a href="${pageContext.request.contextPath}/dosen" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300">
                     <i class="fas fa-chalkboard-teacher w-5"></i>
                     <span class="font-medium text-sm">Dosen</span>
                 </a>
                 
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300">
+                <a href="${pageContext.request.contextPath}/matakuliah" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300">
                     <i class="fas fa-book w-5"></i>
                     <span class="font-medium text-sm">Mata Kuliah</span>
                 </a>
                 
-                <a href="#" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300">
+                <a href="${pageContext.request.contextPath}/jurusan" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300">
                     <i class="fas fa-building w-5"></i>
                     <span class="font-medium text-sm">Jurusan</span>
                 </a>

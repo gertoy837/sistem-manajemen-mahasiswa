@@ -93,18 +93,6 @@ CREATE TABLE mata_kuliah (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabel Users untuk Login
-DROP TABLE IF EXISTS users CASCADE;
-CREATE TABLE users (
-    id_user SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    nama_lengkap VARCHAR(100),
-    email VARCHAR(100),
-    role VARCHAR(20) DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Insert Data Sample
 INSERT INTO fakultas (nama_fakultas, dekan, tahun_berdiri) VALUES
 ('Fakultas Teknik', 'Dr. Ahmad Susanto, M.T.', 2005),
@@ -139,8 +127,3 @@ INSERT INTO mata_kuliah (id_jurusan, id_dosen, kode_matakuliah, nama_matakuliah,
 (1, 2, 'TIF201', 'Basis Data', 3, 3),
 (1, 2, 'TIF202', 'Pemrograman Web', 3, 4)
 ON CONFLICT (kode_matakuliah) DO NOTHING;
-
--- Insert default admin user
-INSERT INTO users (username, password, nama_lengkap, email, role) VALUES
-('admin', 'admin123', 'Administrator', 'admin@universitas.ac.id', 'admin'),
-('staff', 'staff123', 'Staff Akademik', 'staff@universitas.ac.id', 'staff');

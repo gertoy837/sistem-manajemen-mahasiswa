@@ -79,4 +79,17 @@ public class DatabaseConfig {
         }
         return false;
     }
+
+    public static void main(String[] args) {
+        System.out.println("Memulai pengetesan koneksi...");
+
+        // Memanggil method testConnection yang sudah kamu buat
+        boolean isConnected = testConnection();
+
+        if (isConnected) {
+            System.out.println("STATUS: Pengetesan Berhasil!");
+        } else {
+            System.out.println("STATUS: Pengetesan Gagal!");
+        }
+    }
 }

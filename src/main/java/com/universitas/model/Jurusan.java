@@ -8,9 +8,11 @@ import java.time.LocalDateTime;
 public class Jurusan {
     private int idJurusan;
     private int idFakultas;
+    private String kodeJurusan;
     private String namaJurusan;
+    private String jenjang;
+    private String akreditasi;
     private String ketuaJurusan;
-    private char akreditasi;
     private LocalDateTime createdAt;
     
     // Relational field
@@ -20,10 +22,11 @@ public class Jurusan {
     public Jurusan() {}
     
     // Constructor dengan parameter utama
-    public Jurusan(String namaJurusan, int idFakultas, String ketuaJurusan, char akreditasi) {
+    public Jurusan(String kodeJurusan, String namaJurusan, int idFakultas, String jenjang, String akreditasi) {
+        this.kodeJurusan = kodeJurusan;
         this.namaJurusan = namaJurusan;
         this.idFakultas = idFakultas;
-        this.ketuaJurusan = ketuaJurusan;
+        this.jenjang = jenjang;
         this.akreditasi = akreditasi;
     }
     
@@ -34,14 +37,20 @@ public class Jurusan {
     public int getIdFakultas() { return idFakultas; }
     public void setIdFakultas(int idFakultas) { this.idFakultas = idFakultas; }
     
+    public String getKodeJurusan() { return kodeJurusan; }
+    public void setKodeJurusan(String kodeJurusan) { this.kodeJurusan = kodeJurusan; }
+    
     public String getNamaJurusan() { return namaJurusan; }
     public void setNamaJurusan(String namaJurusan) { this.namaJurusan = namaJurusan; }
     
+    public String getJenjang() { return jenjang; }
+    public void setJenjang(String jenjang) { this.jenjang = jenjang; }
+    
+    public String getAkreditasi() { return akreditasi; }
+    public void setAkreditasi(String akreditasi) { this.akreditasi = akreditasi; }
+    
     public String getKetuaJurusan() { return ketuaJurusan; }
     public void setKetuaJurusan(String ketuaJurusan) { this.ketuaJurusan = ketuaJurusan; }
-    
-    public char getAkreditasi() { return akreditasi; }
-    public void setAkreditasi(char akreditasi) { this.akreditasi = akreditasi; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
@@ -53,9 +62,10 @@ public class Jurusan {
     public String toString() {
         return "Jurusan{" +
                 "id=" + idJurusan +
+                ", kode='" + kodeJurusan + '\'' +
                 ", nama='" + namaJurusan + '\'' +
-                ", ketua='" + ketuaJurusan + '\'' +
-                ", akreditasi=" + akreditasi +
+                ", jenjang='" + jenjang + '\'' +
+                ", akreditasi='" + akreditasi + '\'' +
                 ", fakultas='" + namaFakultas + '\'' +
                 '}';
     }

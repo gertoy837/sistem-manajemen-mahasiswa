@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             // Cek jika sudah login
             HttpSession session = request.getSession(false);
             if (session != null && session.getAttribute("user") != null) {
-                response.sendRedirect(request.getContextPath() + "/mahasiswa");
+                response.sendRedirect(request.getContextPath() + "/dashboard");
                 return;
             }
             
@@ -78,7 +78,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("role", user.getRole());
             session.setMaxInactiveInterval(30 * 60); // 30 menit
             
-            response.sendRedirect(request.getContextPath() + "/mahasiswa");
+            response.sendRedirect(request.getContextPath() + "/dashboard");
         } else {
             // Login gagal
             request.setAttribute("error", "Username atau password salah!");
