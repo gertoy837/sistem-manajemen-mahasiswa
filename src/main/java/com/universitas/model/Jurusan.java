@@ -1,70 +1,98 @@
 package com.universitas.model;
 
-import java.time.LocalDateTime;
-
 /**
  * Model untuk tabel Jurusan
  */
 public class Jurusan {
     private int idJurusan;
     private int idFakultas;
-    private String kodeJurusan;
     private String namaJurusan;
-    private String jenjang;
-    private String akreditasi;
     private String ketuaJurusan;
-    private LocalDateTime createdAt;
+    private String akreditasi;
     
-    // Relational field
+    // Untuk join dengan fakultas
     private String namaFakultas;
     
-    // Default constructor
+    // Constructors
     public Jurusan() {}
     
-    // Constructor dengan parameter utama
-    public Jurusan(String kodeJurusan, String namaJurusan, int idFakultas, String jenjang, String akreditasi) {
-        this.kodeJurusan = kodeJurusan;
+    public Jurusan(int idJurusan, String namaJurusan) {
+        this.idJurusan = idJurusan;
         this.namaJurusan = namaJurusan;
-        this.idFakultas = idFakultas;
-        this.jenjang = jenjang;
-        this.akreditasi = akreditasi;
     }
     
     // Getters and Setters
-    public int getIdJurusan() { return idJurusan; }
-    public void setIdJurusan(int idJurusan) { this.idJurusan = idJurusan; }
+    public int getIdJurusan() {
+        return idJurusan;
+    }
     
-    public int getIdFakultas() { return idFakultas; }
-    public void setIdFakultas(int idFakultas) { this.idFakultas = idFakultas; }
+    public void setIdJurusan(int idJurusan) {
+        this.idJurusan = idJurusan;
+    }
     
-    public String getKodeJurusan() { return kodeJurusan; }
-    public void setKodeJurusan(String kodeJurusan) { this.kodeJurusan = kodeJurusan; }
+    public int getIdFakultas() {
+        return idFakultas;
+    }
     
-    public String getNamaJurusan() { return namaJurusan; }
-    public void setNamaJurusan(String namaJurusan) { this.namaJurusan = namaJurusan; }
+    public void setIdFakultas(int idFakultas) {
+        this.idFakultas = idFakultas;
+    }
     
-    public String getJenjang() { return jenjang; }
-    public void setJenjang(String jenjang) { this.jenjang = jenjang; }
+    public String getNamaJurusan() {
+        return namaJurusan;
+    }
     
-    public String getAkreditasi() { return akreditasi; }
-    public void setAkreditasi(String akreditasi) { this.akreditasi = akreditasi; }
+    public void setNamaJurusan(String namaJurusan) {
+        this.namaJurusan = namaJurusan;
+    }
     
-    public String getKetuaJurusan() { return ketuaJurusan; }
-    public void setKetuaJurusan(String ketuaJurusan) { this.ketuaJurusan = ketuaJurusan; }
+    public String getKetuaJurusan() {
+        return ketuaJurusan;
+    }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setKetuaJurusan(String ketuaJurusan) {
+        this.ketuaJurusan = ketuaJurusan;
+    }
     
-    public String getNamaFakultas() { return namaFakultas; }
-    public void setNamaFakultas(String namaFakultas) { this.namaFakultas = namaFakultas; }
+    public String getAkreditasi() {
+        return akreditasi;
+    }
+    
+    public void setAkreditasi(String akreditasi) {
+        this.akreditasi = akreditasi;
+    }
+    
+    public String getNamaFakultas() {
+        return namaFakultas;
+    }
+    
+    public void setNamaFakultas(String namaFakultas) {
+        this.namaFakultas = namaFakultas;
+    }
+    
+    // Backward compatibility methods (jika ada kode lama yang menggunakan ini)
+    public String getKodeJurusan() {
+        return String.valueOf(idJurusan);
+    }
+    
+    public void setKodeJurusan(String kodeJurusan) {
+        // Do nothing - for backward compatibility
+    }
+    
+    public String getJenjang() {
+        return "S1"; // Default value
+    }
+    
+    public void setJenjang(String jenjang) {
+        // Do nothing - for backward compatibility
+    }
     
     @Override
     public String toString() {
         return "Jurusan{" +
                 "id=" + idJurusan +
-                ", kode='" + kodeJurusan + '\'' +
                 ", nama='" + namaJurusan + '\'' +
-                ", jenjang='" + jenjang + '\'' +
+                ", ketua='" + ketuaJurusan + '\'' +
                 ", akreditasi='" + akreditasi + '\'' +
                 ", fakultas='" + namaFakultas + '\'' +
                 '}';

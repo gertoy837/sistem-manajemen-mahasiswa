@@ -3,10 +3,8 @@ package com.universitas.servlet;
 import java.io.IOException;
 import java.util.List;
 
-import com.universitas.dao.DosenDAO;
 import com.universitas.dao.JurusanDAO;
 import com.universitas.dao.MataKuliahDAO;
-import com.universitas.model.Dosen;
 import com.universitas.model.Jurusan;
 import com.universitas.model.MataKuliah;
 
@@ -25,13 +23,11 @@ public class MataKuliahServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private MataKuliahDAO mataKuliahDAO;
     private JurusanDAO jurusanDAO;
-    private DosenDAO dosenDAO;
     
     @Override
     public void init() throws ServletException {
         mataKuliahDAO = new MataKuliahDAO();
         jurusanDAO = new JurusanDAO();
-        dosenDAO = new DosenDAO();
     }
     
     @Override
@@ -110,9 +106,7 @@ public class MataKuliahServlet extends HttpServlet {
     private void showNewForm(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         List<Jurusan> listJurusan = jurusanDAO.getAllJurusan();
-        List<Dosen> listDosen = dosenDAO.getAllDosen();
         request.setAttribute("listJurusan", listJurusan);
-        request.setAttribute("listDosen", listDosen);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/matakuliah/add.jsp");
         dispatcher.forward(request, response);
     }
@@ -125,11 +119,9 @@ public class MataKuliahServlet extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         MataKuliah existingMataKuliah = mataKuliahDAO.getMataKuliahById(id);
         List<Jurusan> listJurusan = jurusanDAO.getAllJurusan();
-        List<Dosen> listDosen = dosenDAO.getAllDosen();
         
         request.setAttribute("mataKuliah", existingMataKuliah);
         request.setAttribute("listJurusan", listJurusan);
-        request.setAttribute("listDosen", listDosen);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/matakuliah/edit.jsp");
         dispatcher.forward(request, response);
     }
@@ -195,11 +187,6 @@ public class MataKuliahServlet extends HttpServlet {
         String idJurusanStr = request.getParameter("idJurusan");
         if (idJurusanStr != null && !idJurusanStr.isEmpty()) {
             mataKuliah.setIdJurusan(Integer.parseInt(idJurusanStr));
-        }
-        
-        String idDosenStr = request.getParameter("idDosen");
-        if (idDosenStr != null && !idDosenStr.isEmpty()) {
-            mataKuliah.setIdDosen(Integer.parseInt(idDosenStr));
         }
         
         mataKuliah.setKodeMatakuliah(request.getParameter("kodeMatakuliah"));

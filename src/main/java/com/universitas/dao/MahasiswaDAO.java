@@ -24,7 +24,7 @@ public class MahasiswaDAO {
     public boolean tambahMahasiswa(Mahasiswa mahasiswa) {
         String sql = "INSERT INTO mahasiswa (id_jurusan, id_dosen, nim, nama_mahasiswa, " +
                     "email, telepon, alamat, jenis_kelamin, tanggal_lahir, tahun_masuk, " +
-                    "semester_aktif, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "semester_aktif, ipk, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -53,7 +53,8 @@ public class MahasiswaDAO {
             
             pstmt.setInt(10, mahasiswa.getTahunMasuk());
             pstmt.setInt(11, mahasiswa.getSemesterAktif());
-            pstmt.setString(12, mahasiswa.getStatus());
+            pstmt.setDouble(12, mahasiswa.getIpk());
+            pstmt.setString(13, mahasiswa.getStatus());
             
             int result = pstmt.executeUpdate();
             return result > 0;

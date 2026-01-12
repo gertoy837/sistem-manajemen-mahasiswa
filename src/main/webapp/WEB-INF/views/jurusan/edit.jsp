@@ -1,169 +1,146 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Jurusan - Sistem Manajemen Mahasiswa</title>
+    <title>Edit Jurusan - UniManage</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #f5f3ff 0%, #fdf2f8 50%, #f0f9ff 100%); }
+        .sidebar-item { transition: all 0.2s ease; }
+        .sidebar-item:hover { background: rgba(139, 92, 246, 0.08); }
+        .sidebar-item.active { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
+        .card-shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
+<body class="min-h-screen text-slate-700">
+    <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gradient-to-b from-blue-800 to-blue-900 text-white flex flex-col">
-            <div class="p-6 border-b border-blue-700">
+        <aside class="w-64 bg-white/80 backdrop-blur-sm fixed h-full z-50 border-r border-slate-200/60">
+            <div class="p-6">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-white/20 p-2 rounded-lg">
-                        <i class="fas fa-graduation-cap text-2xl"></i>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-lg"></i>
                     </div>
-                    <div>
-                        <h1 class="font-bold text-lg">SIAKAD</h1>
-                        <p class="text-blue-200 text-xs">Universitas</p>
-                    </div>
+                    <span class="font-bold text-xl text-slate-800">UniManage</span>
                 </div>
             </div>
-            
-            <nav class="flex-1 p-4 space-y-1">
-                <a href="${pageContext.request.contextPath}/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
-                    <i class="fas fa-chart-pie w-5"></i>
-                    <span>Dashboard</span>
+            <nav class="px-4 mt-2">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-3">Menu</p>
+                <a href="${pageContext.request.contextPath}/dashboard" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 mb-1">
+                    <i class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/mahasiswa" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
-                    <i class="fas fa-user-graduate w-5"></i>
-                    <span>Mahasiswa</span>
+                <a href="${pageContext.request.contextPath}/mahasiswa" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 mb-1">
+                    <i class="fas fa-user-graduate w-5"></i><span class="font-medium">Mahasiswa</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/dosen" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
-                    <i class="fas fa-chalkboard-teacher w-5"></i>
-                    <span>Dosen</span>
+                <a href="${pageContext.request.contextPath}/matakuliah" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 mb-1">
+                    <i class="fas fa-book w-5"></i><span class="font-medium">Mata Kuliah</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/matakuliah" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
-                    <i class="fas fa-book w-5"></i>
-                    <span>Mata Kuliah</span>
-                </a>
-                <a href="${pageContext.request.contextPath}/jurusan" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-white/20 text-white transition">
-                    <i class="fas fa-building w-5"></i>
-                    <span>Jurusan</span>
+                <a href="${pageContext.request.contextPath}/jurusan" class="sidebar-item active flex items-center space-x-3 px-3 py-2.5 rounded-xl mb-1">
+                    <i class="fas fa-building w-5"></i><span class="font-medium">Jurusan</span>
                 </a>
             </nav>
-            
-            <div class="p-4 border-t border-blue-700">
-                <a href="${pageContext.request.contextPath}/logout" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-red-500/20 transition">
-                    <i class="fas fa-sign-out-alt w-5"></i>
-                    <span>Logout</span>
-                </a>
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-200/60">
+                <div class="flex items-center space-x-3 p-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                        ${fn:toUpperCase(fn:substring(sessionScope.username, 0, 1))}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-slate-800 text-sm truncate">${sessionScope.namaLengkap != null ? sessionScope.namaLengkap : sessionScope.username}</p>
+                        <p class="text-xs text-slate-500">${sessionScope.role}</p>
+                    </div>
+                    <a href="${pageContext.request.contextPath}/logout" class="p-2 text-slate-400 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></a>
+                </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Bar -->
-            <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-4">
-                <div class="flex items-center justify-between">
+        <main class="flex-1 ml-64">
+            <header class="bg-white/60 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-40">
+                <div class="flex items-center justify-between px-8 py-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Edit Jurusan</h2>
-                        <p class="text-gray-500 text-sm">Edit: ${jurusan.namaJurusan}</p>
+                        <h2 class="text-xl font-bold text-slate-800">Edit Jurusan</h2>
+                        <p class="text-slate-500 text-sm">Perbarui data jurusan</p>
                     </div>
+                    <a href="${pageContext.request.contextPath}/jurusan" class="px-4 py-2 text-slate-600 hover:text-slate-800 font-medium text-sm transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </a>
                 </div>
             </header>
 
-            <!-- Content -->
-            <main class="flex-1 overflow-y-auto p-8">
+            <div class="p-8">
                 <div class="max-w-2xl mx-auto">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-                        <form action="${pageContext.request.contextPath}/jurusan/update" method="post">
-                            <input type="hidden" name="idJurusan" value="${jurusan.idJurusan}">
-                            
-                            <div class="space-y-6">
-                                <!-- Kode Jurusan -->
-                                <div>
-                                    <label for="kodeJurusan" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Kode Jurusan <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="kodeJurusan" name="kodeJurusan" value="${jurusan.kodeJurusan}" required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                           placeholder="Contoh: TI, SI, TK">
+                    <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+                        <div class="p-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-white">
+                                    <i class="fas fa-edit text-lg"></i>
                                 </div>
-
-                                <!-- Nama Jurusan -->
                                 <div>
-                                    <label for="namaJurusan" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Nama Jurusan <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="namaJurusan" name="namaJurusan" value="${jurusan.namaJurusan}" required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                           placeholder="Masukkan nama jurusan">
-                                </div>
-
-                                <!-- Fakultas -->
-                                <div>
-                                    <label for="idFakultas" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Fakultas <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="idFakultas" name="idFakultas" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Pilih Fakultas</option>
-                                        <c:forEach var="fakultas" items="${listFakultas}">
-                                            <option value="${fakultas.idFakultas}" ${fakultas.idFakultas == jurusan.idFakultas ? 'selected' : ''}>${fakultas.namaFakultas}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-
-                                <!-- Jenjang -->
-                                <div>
-                                    <label for="jenjang" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Jenjang <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="jenjang" name="jenjang" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Pilih Jenjang</option>
-                                        <option value="D3" ${jurusan.jenjang == 'D3' ? 'selected' : ''}>D3 (Diploma)</option>
-                                        <option value="S1" ${jurusan.jenjang == 'S1' ? 'selected' : ''}>S1 (Sarjana)</option>
-                                        <option value="S2" ${jurusan.jenjang == 'S2' ? 'selected' : ''}>S2 (Magister)</option>
-                                        <option value="S3" ${jurusan.jenjang == 'S3' ? 'selected' : ''}>S3 (Doktor)</option>
-                                    </select>
-                                </div>
-
-                                <!-- Akreditasi -->
-                                <div>
-                                    <label for="akreditasi" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Akreditasi <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="akreditasi" name="akreditasi" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Pilih Akreditasi</option>
-                                        <option value="Unggul" ${jurusan.akreditasi == 'Unggul' ? 'selected' : ''}>Unggul</option>
-                                        <option value="Baik Sekali" ${jurusan.akreditasi == 'Baik Sekali' ? 'selected' : ''}>Baik Sekali</option>
-                                        <option value="Baik" ${jurusan.akreditasi == 'Baik' ? 'selected' : ''}>Baik</option>
-                                        <option value="A" ${jurusan.akreditasi == 'A' ? 'selected' : ''}>A</option>
-                                        <option value="B" ${jurusan.akreditasi == 'B' ? 'selected' : ''}>B</option>
-                                        <option value="C" ${jurusan.akreditasi == 'C' ? 'selected' : ''}>C</option>
-                                    </select>
+                                    <h3 class="font-semibold text-slate-800">${jurusan.namaJurusan}</h3>
+                                    <p class="text-sm text-slate-500">ID: ${jurusan.idJurusan}</p>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <form action="${pageContext.request.contextPath}/jurusan/update" method="post" class="p-6 space-y-5">
+                            <input type="hidden" name="idJurusan" value="${jurusan.idJurusan}">
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Nama Jurusan <span class="text-red-500">*</span></label>
+                                <input type="text" name="namaJurusan" required maxlength="100" value="${jurusan.namaJurusan}"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                            </div>
 
-                            <!-- Buttons -->
-                            <div class="flex items-center justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Fakultas</label>
+                                <select name="idFakultas" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                                    <option value="">-- Pilih Fakultas --</option>
+                                    <c:forEach var="fakultas" items="${listFakultas}">
+                                        <option value="${fakultas.idFakultas}" ${jurusan.idFakultas == fakultas.idFakultas ? 'selected' : ''}>${fakultas.namaFakultas}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Ketua Jurusan</label>
+                                <input type="text" name="ketuaJurusan" maxlength="100" value="${jurusan.ketuaJurusan}"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Akreditasi</label>
+                                <select name="akreditasi" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                                    <option value="">-- Pilih Akreditasi --</option>
+                                    <option value="A" ${jurusan.akreditasi == 'A' ? 'selected' : ''}>A</option>
+                                    <option value="B" ${jurusan.akreditasi == 'B' ? 'selected' : ''}>B</option>
+                                    <option value="C" ${jurusan.akreditasi == 'C' ? 'selected' : ''}>C</option>
+                                    <option value="Unggul" ${jurusan.akreditasi == 'Unggul' ? 'selected' : ''}>Unggul</option>
+                                    <option value="Baik Sekali" ${jurusan.akreditasi == 'Baik Sekali' ? 'selected' : ''}>Baik Sekali</option>
+                                    <option value="Baik" ${jurusan.akreditasi == 'Baik' ? 'selected' : ''}>Baik</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
                                 <a href="${pageContext.request.contextPath}/jurusan" 
-                                   class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                                   class="px-5 py-2.5 text-slate-600 hover:text-slate-800 font-medium text-sm transition-colors">
                                     Batal
                                 </a>
                                 <button type="submit" 
-                                        class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition">
-                                    <i class="fas fa-save mr-2"></i>
-                                    Update
+                                        class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-medium text-sm transition-colors">
+                                    <i class="fas fa-save mr-2"></i>Update
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 </body>
 </html>

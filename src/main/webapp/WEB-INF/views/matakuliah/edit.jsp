@@ -1,198 +1,184 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Mata Kuliah - Sistem Manajemen Mahasiswa</title>
+    <title>Edit Mata Kuliah - UniManage</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #f5f3ff 0%, #fdf2f8 50%, #f0f9ff 100%); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .sidebar-item { transition: all 0.2s ease; }
+        .sidebar-item:hover { background: rgba(139, 92, 246, 0.08); }
+        .sidebar-item.active { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
+        .card-shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
+<body class="min-h-screen text-slate-700">
+    <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gradient-to-b from-blue-800 to-blue-900 text-white flex flex-col">
-            <div class="p-6 border-b border-blue-700">
+        <aside class="w-64 bg-white/80 backdrop-blur-sm fixed h-full z-50 border-r border-slate-200/60">
+            <div class="p-6">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-white/20 p-2 rounded-lg">
-                        <i class="fas fa-graduation-cap text-2xl"></i>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-lg"></i>
                     </div>
-                    <div>
-                        <h1 class="font-bold text-lg">SIAKAD</h1>
-                        <p class="text-blue-200 text-xs">Universitas</p>
-                    </div>
+                    <span class="font-bold text-xl text-slate-800">UniManage</span>
                 </div>
             </div>
-            
-            <nav class="flex-1 p-4 space-y-1">
-                <a href="${pageContext.request.contextPath}/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
-                    <i class="fas fa-chart-pie w-5"></i>
-                    <span>Dashboard</span>
+            <nav class="px-4 mt-2">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-3">Menu</p>
+                <a href="${pageContext.request.contextPath}/dashboard" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 mb-1">
+                    <i class="fas fa-th-large w-5"></i>
+                    <span class="font-medium">Dashboard</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/mahasiswa" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
+                <a href="${pageContext.request.contextPath}/mahasiswa" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 mb-1">
                     <i class="fas fa-user-graduate w-5"></i>
-                    <span>Mahasiswa</span>
+                    <span class="font-medium">Mahasiswa</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/dosen" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
-                    <i class="fas fa-chalkboard-teacher w-5"></i>
-                    <span>Dosen</span>
-                </a>
-                <a href="${pageContext.request.contextPath}/matakuliah" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-white/20 text-white transition">
+                <a href="${pageContext.request.contextPath}/matakuliah" class="sidebar-item active flex items-center space-x-3 px-3 py-2.5 rounded-xl mb-1">
                     <i class="fas fa-book w-5"></i>
-                    <span>Mata Kuliah</span>
+                    <span class="font-medium">Mata Kuliah</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/jurusan" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 transition">
+                <a href="${pageContext.request.contextPath}/jurusan" class="sidebar-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 mb-1">
                     <i class="fas fa-building w-5"></i>
-                    <span>Jurusan</span>
+                    <span class="font-medium">Jurusan</span>
                 </a>
             </nav>
-            
-            <div class="p-4 border-t border-blue-700">
-                <a href="${pageContext.request.contextPath}/logout" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-red-500/20 transition">
-                    <i class="fas fa-sign-out-alt w-5"></i>
-                    <span>Logout</span>
-                </a>
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-200/60">
+                <div class="flex items-center space-x-3 p-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                        ${fn:toUpperCase(fn:substring(sessionScope.username, 0, 1))}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-slate-800 text-sm truncate">${sessionScope.namaLengkap != null ? sessionScope.namaLengkap : sessionScope.username}</p>
+                        <p class="text-xs text-slate-500">${sessionScope.role}</p>
+                    </div>
+                    <a href="${pageContext.request.contextPath}/logout" class="p-2 text-slate-400 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></a>
+                </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Bar -->
-            <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-4">
-                <div class="flex items-center justify-between">
+        <main class="flex-1 ml-64">
+            <header class="bg-white/60 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-40">
+                <div class="flex items-center justify-between px-8 py-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Edit Mata Kuliah</h2>
-                        <p class="text-gray-500 text-sm">Edit: ${mataKuliah.namaMatakuliah}</p>
+                        <h2 class="text-xl font-bold text-slate-800">Edit Mata Kuliah</h2>
+                        <p class="text-slate-500 text-sm">Perbarui data mata kuliah</p>
                     </div>
+                    <a href="${pageContext.request.contextPath}/matakuliah" class="px-4 py-2 text-slate-600 hover:text-slate-800 font-medium text-sm transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    </a>
                 </div>
             </header>
 
-            <!-- Content -->
-            <main class="flex-1 overflow-y-auto p-8">
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-                        <form action="${pageContext.request.contextPath}/matakuliah/update" method="post">
+            <div class="p-8">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+                        <div class="p-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white">
+                                    <i class="fas fa-edit text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-slate-800">${mataKuliah.namaMatakuliah}</h3>
+                                    <p class="text-sm text-slate-500">Kode: ${mataKuliah.kodeMatakuliah}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form action="${pageContext.request.contextPath}/matakuliah/update" method="post" class="p-6 space-y-5">
                             <input type="hidden" name="idMatakuliah" value="${mataKuliah.idMatakuliah}">
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Kode Mata Kuliah -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label for="kodeMatakuliah" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Kode Mata Kuliah <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="kodeMatakuliah" name="kodeMatakuliah" value="${mataKuliah.kodeMatakuliah}" required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                           placeholder="Contoh: MK001">
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Kode MK <span class="text-red-500">*</span></label>
+                                    <input type="text" name="kodeMatakuliah" required maxlength="20" value="${mataKuliah.kodeMatakuliah}"
+                                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
                                 </div>
-
-                                <!-- Nama Mata Kuliah -->
                                 <div>
-                                    <label for="namaMatakuliah" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Nama Mata Kuliah <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="namaMatakuliah" name="namaMatakuliah" value="${mataKuliah.namaMatakuliah}" required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                           placeholder="Masukkan nama mata kuliah">
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Nama Mata Kuliah <span class="text-red-500">*</span></label>
+                                    <input type="text" name="namaMatakuliah" required maxlength="100" value="${mataKuliah.namaMatakuliah}"
+                                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
                                 </div>
+                            </div>
 
-                                <!-- SKS -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label for="sks" class="block text-sm font-medium text-gray-700 mb-2">
-                                        SKS <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="number" id="sks" name="sks" value="${mataKuliah.sks}" min="1" max="6" required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                           placeholder="Jumlah SKS">
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">SKS <span class="text-red-500">*</span></label>
+                                    <input type="number" name="sks" required min="1" max="6" value="${mataKuliah.sks}"
+                                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
                                 </div>
-
-                                <!-- Semester -->
                                 <div>
-                                    <label for="semester" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Semester <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="semester" name="semester" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Pilih Semester</option>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Semester <span class="text-red-500">*</span></label>
+                                    <select name="semester" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                                        <option value="">-- Pilih Semester --</option>
                                         <c:forEach begin="1" end="8" var="sem">
                                             <option value="${sem}" ${mataKuliah.semester == sem ? 'selected' : ''}>Semester ${sem}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
+                            </div>
 
-                                <!-- Jurusan -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label for="idJurusan" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Jurusan <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="idJurusan" name="idJurusan" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Pilih Jurusan</option>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Jurusan <span class="text-red-500">*</span></label>
+                                    <select name="idJurusan" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                                        <option value="">-- Pilih Jurusan --</option>
                                         <c:forEach var="jurusan" items="${listJurusan}">
-                                            <option value="${jurusan.idJurusan}" ${jurusan.idJurusan == mataKuliah.idJurusan ? 'selected' : ''}>${jurusan.namaJurusan}</option>
+                                            <option value="${jurusan.idJurusan}" ${mataKuliah.idJurusan == jurusan.idJurusan ? 'selected' : ''}>${jurusan.namaJurusan}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
-
-                                <!-- Dosen Pengampu -->
                                 <div>
-                                    <label for="idDosen" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Dosen Pengampu
-                                    </label>
-                                    <select id="idDosen" name="idDosen"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Pilih Dosen (Opsional)</option>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">Dosen Pengampu</label>
+                                    <select id="idDosen" name="idDosen" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                                        <option value="">-- Pilih Dosen (Opsional) --</option>
                                         <c:forEach var="dosen" items="${listDosen}">
                                             <option value="${dosen.idDosen}" ${dosen.idDosen == mataKuliah.idDosen ? 'selected' : ''}>${dosen.namaDosen}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
-
-                                <!-- Jenis -->
-                                <div>
-                                    <label for="jenis" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Jenis <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="jenis" name="jenis" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Pilih Jenis</option>
-                                        <option value="Wajib" ${mataKuliah.jenis == 'Wajib' ? 'selected' : ''}>Wajib</option>
-                                        <option value="Pilihan" ${mataKuliah.jenis == 'Pilihan' ? 'selected' : ''}>Pilihan</option>
-                                    </select>
-                                </div>
-
-                                <!-- Deskripsi -->
-                                <div class="md:col-span-2">
-                                    <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Deskripsi
-                                    </label>
-                                    <textarea id="deskripsi" name="deskripsi" rows="3"
-                                              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                              placeholder="Deskripsi mata kuliah (opsional)">${mataKuliah.deskripsi}</textarea>
-                                </div>
                             </div>
 
-                            <!-- Buttons -->
-                            <div class="flex items-center justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Jenis <span class="text-red-500">*</span></label>
+                                <select name="jenis" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm">
+                                    <option value="">-- Pilih Jenis --</option>
+                                    <option value="Wajib" ${mataKuliah.jenis == 'Wajib' ? 'selected' : ''}>Wajib</option>
+                                    <option value="Pilihan" ${mataKuliah.jenis == 'Pilihan' ? 'selected' : ''}>Pilihan</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Deskripsi</label>
+                                <textarea name="deskripsi" rows="3"
+                                          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all text-sm resize-none">${mataKuliah.deskripsi}</textarea>
+                            </div>
+
+                            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
                                 <a href="${pageContext.request.contextPath}/matakuliah" 
-                                   class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                                   class="px-5 py-2.5 text-slate-600 hover:text-slate-800 font-medium text-sm transition-colors">
                                     Batal
                                 </a>
                                 <button type="submit" 
-                                        class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition">
-                                    <i class="fas fa-save mr-2"></i>
-                                    Update
+                                        class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-medium text-sm transition-colors">
+                                    <i class="fas fa-save mr-2"></i>Update
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 </body>
 </html>

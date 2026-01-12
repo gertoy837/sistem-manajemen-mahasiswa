@@ -5,7 +5,6 @@ package com.universitas.model;
  */
 public class Fakultas {
     private int idFakultas;
-    private String kodeFakultas;
     private String namaFakultas;
     private String dekan;
     
@@ -13,17 +12,13 @@ public class Fakultas {
     public Fakultas() {}
     
     // Constructor dengan parameter
-    public Fakultas(String kodeFakultas, String namaFakultas) {
-        this.kodeFakultas = kodeFakultas;
+    public Fakultas(String namaFakultas) {
         this.namaFakultas = namaFakultas;
     }
     
     // Getters and Setters
     public int getIdFakultas() { return idFakultas; }
     public void setIdFakultas(int idFakultas) { this.idFakultas = idFakultas; }
-    
-    public String getKodeFakultas() { return kodeFakultas; }
-    public void setKodeFakultas(String kodeFakultas) { this.kodeFakultas = kodeFakultas; }
     
     public String getNamaFakultas() { return namaFakultas; }
     public void setNamaFakultas(String namaFakultas) { this.namaFakultas = namaFakultas; }
@@ -35,7 +30,6 @@ public class Fakultas {
     public String toString() {
         return "Fakultas{" +
                 "id=" + idFakultas +
-                ", kode='" + kodeFakultas + '\'' +
                 ", nama='" + namaFakultas + '\'' +
                 '}';
     }

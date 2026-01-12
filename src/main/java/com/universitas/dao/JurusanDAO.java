@@ -21,22 +21,27 @@ public class JurusanDAO {
      */
     public List<Jurusan> getAllJurusan() {
         List<Jurusan> listJurusan = new ArrayList<>();
-        String sql = "SELECT j.*, f.nama_fakultas " +
-                    "FROM jurusan j " +
-                    "LEFT JOIN fakultas f ON j.id_fakultas = f.id_fakultas " +
-                    "ORDER BY j.nama_jurusan";
+        String sql = "SELECT j.*, f.nama_fakultas FROM jurusan j " +
+                     "LEFT JOIN fakultas f ON j.id_fakultas = f.id_fakultas " +
+                     "ORDER BY j.nama_jurusan";
         
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             
+            System.out.println("DEBUG: Executing getAllJurusan query");
+            
             while (rs.next()) {
                 Jurusan jurusan = mapResultSetToJurusan(rs);
                 listJurusan.add(jurusan);
+                System.out.println("DEBUG: Found jurusan - " + jurusan.getNamaJurusan());
             }
             
+            System.out.println("DEBUG: Total jurusan found = " + listJurusan.size());
+            
         } catch (SQLException e) {
-            System.err.println("Error mengambil data jurusan: " + e.getMessage());
+            System.err.println("Error getAllJurusan: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return listJurusan;
@@ -46,10 +51,9 @@ public class JurusanDAO {
      * Mengambil jurusan berdasarkan ID
      */
     public Jurusan getJurusanById(int id) {
-        String sql = "SELECT j.*, f.nama_fakultas " +
-                    "FROM jurusan j " +
-                    "LEFT JOIN fakultas f ON j.id_fakultas = f.id_fakultas " +
-                    "WHERE j.id_jurusan = ?";
+        String sql = "SELECT j.*, f.nama_fakultas FROM jurusan j " +
+                     "LEFT JOIN fakultas f ON j.id_fakultas = f.id_fakultas " +
+                     "WHERE j.id_jurusan = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -62,7 +66,8 @@ public class JurusanDAO {
             }
             
         } catch (SQLException e) {
-            System.err.println("Error mengambil jurusan by ID: " + e.getMessage());
+            System.err.println("Error getJurusanById: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return null;
@@ -72,53 +77,50 @@ public class JurusanDAO {
      * Menambahkan jurusan baru
      */
     public boolean insertJurusan(Jurusan jurusan) {
-        String sql = "INSERT INTO jurusan (id_fakultas, kode_jurusan, nama_jurusan, jenjang, akreditasi) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO jurusan (id_fakultas, nama_jurusan, ketua_jurusan, akreditasi) VALUES (?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setInt(1, jurusan.getIdFakultas());
-            pstmt.setString(2, jurusan.getKodeJurusan());
-            pstmt.setString(3, jurusan.getNamaJurusan());
-            pstmt.setString(4, jurusan.getJenjang());
-            pstmt.setString(5, jurusan.getAkreditasi());
+            pstmt.setObject(1, jurusan.getIdFakultas() > 0 ? jurusan.getIdFakultas() : null);
+            pstmt.setString(2, jurusan.getNamaJurusan());
+            pstmt.setString(3, jurusan.getKetuaJurusan());
+            pstmt.setString(4, jurusan.getAkreditasi());
             
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
+            int result = pstmt.executeUpdate();
+            System.out.println("DEBUG DAO: Insert jurusan result = " + result);
+            return result > 0;
             
         } catch (SQLException e) {
-            System.err.println("Error inserting jurusan: " + e.getMessage());
+            System.err.println("Error insertJurusan: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-        
-        return false;
     }
     
     /**
      * Mengupdate data jurusan
      */
     public boolean updateJurusan(Jurusan jurusan) {
-        String sql = "UPDATE jurusan SET id_fakultas = ?, kode_jurusan = ?, nama_jurusan = ?, " +
-                     "jenjang = ?, akreditasi = ? WHERE id_jurusan = ?";
+        String sql = "UPDATE jurusan SET id_fakultas = ?, nama_jurusan = ?, ketua_jurusan = ?, akreditasi = ? WHERE id_jurusan = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setInt(1, jurusan.getIdFakultas());
-            pstmt.setString(2, jurusan.getKodeJurusan());
-            pstmt.setString(3, jurusan.getNamaJurusan());
-            pstmt.setString(4, jurusan.getJenjang());
-            pstmt.setString(5, jurusan.getAkreditasi());
-            pstmt.setInt(6, jurusan.getIdJurusan());
+            pstmt.setObject(1, jurusan.getIdFakultas() > 0 ? jurusan.getIdFakultas() : null);
+            pstmt.setString(2, jurusan.getNamaJurusan());
+            pstmt.setString(3, jurusan.getKetuaJurusan());
+            pstmt.setString(4, jurusan.getAkreditasi());
+            pstmt.setInt(5, jurusan.getIdJurusan());
             
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
+            int result = pstmt.executeUpdate();
+            return result > 0;
             
         } catch (SQLException e) {
-            System.err.println("Error updating jurusan: " + e.getMessage());
+            System.err.println("Error updateJurusan: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-        
-        return false;
     }
     
     /**
@@ -131,14 +133,14 @@ public class JurusanDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, id);
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
+            int result = pstmt.executeUpdate();
+            return result > 0;
             
         } catch (SQLException e) {
-            System.err.println("Error deleting jurusan: " + e.getMessage());
+            System.err.println("Error deleteJurusan: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-        
-        return false;
     }
     
     /**
@@ -146,18 +148,15 @@ public class JurusanDAO {
      */
     public List<Jurusan> searchJurusan(String keyword) {
         List<Jurusan> listJurusan = new ArrayList<>();
-        String sql = "SELECT j.*, f.nama_fakultas " +
-                     "FROM jurusan j " +
+        String sql = "SELECT j.*, f.nama_fakultas FROM jurusan j " +
                      "LEFT JOIN fakultas f ON j.id_fakultas = f.id_fakultas " +
-                     "WHERE LOWER(j.kode_jurusan) LIKE LOWER(?) OR LOWER(j.nama_jurusan) LIKE LOWER(?) " +
-                     "ORDER BY j.nama_jurusan";
+                     "WHERE j.nama_jurusan ILIKE ? ORDER BY j.nama_jurusan";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             String searchPattern = "%" + keyword + "%";
             pstmt.setString(1, searchPattern);
-            pstmt.setString(2, searchPattern);
             
             ResultSet rs = pstmt.executeQuery();
             
@@ -167,7 +166,8 @@ public class JurusanDAO {
             }
             
         } catch (SQLException e) {
-            System.err.println("Error searching jurusan: " + e.getMessage());
+            System.err.println("Error searchJurusan: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return listJurusan;
@@ -178,28 +178,13 @@ public class JurusanDAO {
      */
     private Jurusan mapResultSetToJurusan(ResultSet rs) throws SQLException {
         Jurusan jurusan = new Jurusan();
-        
         jurusan.setIdJurusan(rs.getInt("id_jurusan"));
         jurusan.setIdFakultas(rs.getInt("id_fakultas"));
         jurusan.setNamaJurusan(rs.getString("nama_jurusan"));
-        
-        // Try to get kode_jurusan if exists
-        try {
-            jurusan.setKodeJurusan(rs.getString("kode_jurusan"));
-        } catch (SQLException e) {
-            // Column might not exist in some queries
-        }
-        
-        // Try to get jenjang if exists
-        try {
-            jurusan.setJenjang(rs.getString("jenjang"));
-        } catch (SQLException e) {
-            // Column might not exist in some queries
-        }
-        
+        jurusan.setKetuaJurusan(rs.getString("ketua_jurusan"));
         jurusan.setAkreditasi(rs.getString("akreditasi"));
         
-        // Relational data
+        // Get nama fakultas from join
         try {
             jurusan.setNamaFakultas(rs.getString("nama_fakultas"));
         } catch (SQLException e) {

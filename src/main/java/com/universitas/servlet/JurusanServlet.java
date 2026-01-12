@@ -58,6 +58,7 @@ public class JurusanServlet extends HttpServlet {
                     break;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ServletException(e);
         }
     }
@@ -85,6 +86,7 @@ public class JurusanServlet extends HttpServlet {
                     break;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ServletException(e);
         }
     }
@@ -131,8 +133,25 @@ public class JurusanServlet extends HttpServlet {
      */
     private void insertJurusan(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        Jurusan jurusan = extractJurusanFromRequest(request);
-        jurusanDAO.insertJurusan(jurusan);
+        
+        Jurusan jurusan = new Jurusan();
+        jurusan.setNamaJurusan(request.getParameter("namaJurusan"));
+        jurusan.setKetuaJurusan(request.getParameter("ketuaJurusan"));
+        jurusan.setAkreditasi(request.getParameter("akreditasi"));
+        
+        String idFakultasStr = request.getParameter("idFakultas");
+        if (idFakultasStr != null && !idFakultasStr.isEmpty()) {
+            jurusan.setIdFakultas(Integer.parseInt(idFakultasStr));
+        }
+        
+        boolean success = jurusanDAO.insertJurusan(jurusan);
+        
+        if (success) {
+            request.getSession().setAttribute("successMessage", "Jurusan berhasil ditambahkan!");
+        } else {
+            request.getSession().setAttribute("errorMessage", "Gagal menambahkan jurusan!");
+        }
+        
         response.sendRedirect(request.getContextPath() + "/jurusan");
     }
     
@@ -141,10 +160,26 @@ public class JurusanServlet extends HttpServlet {
      */
     private void updateJurusan(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("idJurusan"));
-        Jurusan jurusan = extractJurusanFromRequest(request);
-        jurusan.setIdJurusan(id);
-        jurusanDAO.updateJurusan(jurusan);
+        
+        Jurusan jurusan = new Jurusan();
+        jurusan.setIdJurusan(Integer.parseInt(request.getParameter("idJurusan")));
+        jurusan.setNamaJurusan(request.getParameter("namaJurusan"));
+        jurusan.setKetuaJurusan(request.getParameter("ketuaJurusan"));
+        jurusan.setAkreditasi(request.getParameter("akreditasi"));
+        
+        String idFakultasStr = request.getParameter("idFakultas");
+        if (idFakultasStr != null && !idFakultasStr.isEmpty()) {
+            jurusan.setIdFakultas(Integer.parseInt(idFakultasStr));
+        }
+        
+        boolean success = jurusanDAO.updateJurusan(jurusan);
+        
+        if (success) {
+            request.getSession().setAttribute("successMessage", "Jurusan berhasil diupdate!");
+        } else {
+            request.getSession().setAttribute("errorMessage", "Gagal mengupdate jurusan!");
+        }
+        
         response.sendRedirect(request.getContextPath() + "/jurusan");
     }
     
@@ -154,7 +189,15 @@ public class JurusanServlet extends HttpServlet {
     private void deleteJurusan(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        jurusanDAO.deleteJurusan(id);
+        
+        boolean success = jurusanDAO.deleteJurusan(id);
+        
+        if (success) {
+            request.getSession().setAttribute("successMessage", "Jurusan berhasil dihapus!");
+        } else {
+            request.getSession().setAttribute("errorMessage", "Gagal menghapus jurusan!");
+        }
+        
         response.sendRedirect(request.getContextPath() + "/jurusan");
     }
     
@@ -176,24 +219,5 @@ public class JurusanServlet extends HttpServlet {
         request.setAttribute("keyword", keyword);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/jurusan/list.jsp");
         dispatcher.forward(request, response);
-    }
-    
-    /**
-     * Extract data jurusan dari request
-     */
-    private Jurusan extractJurusanFromRequest(HttpServletRequest request) {
-        Jurusan jurusan = new Jurusan();
-        
-        String idFakultasStr = request.getParameter("idFakultas");
-        if (idFakultasStr != null && !idFakultasStr.isEmpty()) {
-            jurusan.setIdFakultas(Integer.parseInt(idFakultasStr));
-        }
-        
-        jurusan.setKodeJurusan(request.getParameter("kodeJurusan"));
-        jurusan.setNamaJurusan(request.getParameter("namaJurusan"));
-        jurusan.setJenjang(request.getParameter("jenjang"));
-        jurusan.setAkreditasi(request.getParameter("akreditasi"));
-        
-        return jurusan;
     }
 }

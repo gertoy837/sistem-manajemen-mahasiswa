@@ -80,35 +80,24 @@ public class MahasiswaServlet extends HttpServlet {
             throws ServletException, IOException {
         
         try {
-            System.out.println("DEBUG: Entering listMahasiswa method");
             List<Mahasiswa> listMahasiswa = mahasiswaDAO.getAllMahasiswa();
-            System.out.println("DEBUG: Retrieved " + listMahasiswa.size() + " records from DAO");
-            
             request.setAttribute("listMahasiswa", listMahasiswa);
             
             // Handle messages from session (after redirect)
-            String message = null;
-            String messageType = null;
-            
             if (request.getSession(false) != null) {
-                message = (String) request.getSession().getAttribute("message");
-                messageType = (String) request.getSession().getAttribute("messageType");
-                System.out.println("DEBUG: Session message = " + message);
+                String message = (String) request.getSession().getAttribute("message");
+                String messageType = (String) request.getSession().getAttribute("messageType");
                 
                 if (message != null) {
                     request.setAttribute("message", message);
                     request.setAttribute("messageType", messageType);
-                    // Clear from session
                     request.getSession().removeAttribute("message");
                     request.getSession().removeAttribute("messageType");
-                    System.out.println("DEBUG: Message set in request attributes");
                 }
             }
             
-            System.out.println("DEBUG: Forwarding to JSP");
             request.getRequestDispatcher("/views/mahasiswa/list.jsp").forward(request, response);
         } catch (Exception e) {
-            System.err.println("ERROR in listMahasiswa: " + e.getMessage());
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading data: " + e.getMessage());
         }
@@ -133,11 +122,9 @@ public class MahasiswaServlet extends HttpServlet {
             }
             
             int id = Integer.parseInt(idParam);
-            System.out.println("DEBUG: Getting mahasiswa with ID: " + id);
-            
             Mahasiswa mahasiswa = mahasiswaDAO.getMahasiswaById(id);
             if (mahasiswa == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Mahasiswa not found");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Mahasiswa not found with ID: " + id);
                 return;
             }
             
@@ -145,8 +132,12 @@ public class MahasiswaServlet extends HttpServlet {
             
             request.setAttribute("mahasiswa", mahasiswa);
             request.setAttribute("listJurusan", listJurusan);
-            // Convert char to String untuk JSP compatibility
-            request.setAttribute("jenisKelaminStr", String.valueOf(mahasiswa.getJenisKelamin()));
+            
+            // Convert jenis kelamin char to String for JSP EL compatibility
+            char jk = mahasiswa.getJenisKelamin();
+            String jenisKelaminValue = (jk == 'L' || jk == 'P') ? String.valueOf(jk) : "L";
+            request.setAttribute("selectedJenisKelamin", jenisKelaminValue);
+            
             request.getRequestDispatcher("/views/mahasiswa/edit.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {
@@ -164,12 +155,6 @@ public class MahasiswaServlet extends HttpServlet {
             Mahasiswa mahasiswa = new Mahasiswa();
             
             mahasiswa.setIdJurusan(Integer.parseInt(request.getParameter("idJurusan")));
-            
-            String idDosenStr = request.getParameter("idDosen");
-            if (idDosenStr != null && !idDosenStr.isEmpty()) {
-                mahasiswa.setIdDosen(Integer.parseInt(idDosenStr));
-            }
-            
             mahasiswa.setNim(request.getParameter("nim"));
             mahasiswa.setNamaMahasiswa(request.getParameter("namaMahasiswa"));
             mahasiswa.setEmail(request.getParameter("email"));
@@ -193,6 +178,15 @@ public class MahasiswaServlet extends HttpServlet {
                 mahasiswa.setSemesterAktif(Integer.parseInt(semesterAktifStr));
             } else {
                 mahasiswa.setSemesterAktif(1);
+            }
+            
+            // Parse IPK
+            String ipkStr = request.getParameter("ipk");
+            if (ipkStr != null && !ipkStr.trim().isEmpty()) {
+                String normalized = ipkStr.trim().replace(",", ".");
+                mahasiswa.setIpk(Double.parseDouble(normalized));
+            } else {
+                mahasiswa.setIpk(0.0);
             }
             
             mahasiswa.setStatus(request.getParameter("status"));
@@ -220,162 +214,113 @@ public class MahasiswaServlet extends HttpServlet {
             throws ServletException, IOException {
         
         try {
-            System.out.println("DEBUG: ===== Starting updateMahasiswa =====");
-            
             Mahasiswa mahasiswa = new Mahasiswa();
             
-            // 1. ID Mahasiswa (required)
+            // ID Mahasiswa (required)
             String idParam = request.getParameter("idMahasiswa");
-            System.out.println("DEBUG: idMahasiswa = [" + idParam + "]");
             if (idParam == null || idParam.trim().isEmpty()) {
                 throw new IllegalArgumentException("ID is missing");
             }
-            mahasiswa.setIdMahasiswa(safeParseInt(idParam, "ID"));
+            mahasiswa.setIdMahasiswa(Integer.parseInt(idParam.trim()));
             
-            // 2. ID Jurusan (required)
+            // ID Jurusan (required)
             String idJurusanStr = request.getParameter("idJurusan");
-            System.out.println("DEBUG: idJurusan = [" + idJurusanStr + "]");
             if (idJurusanStr == null || idJurusanStr.trim().isEmpty()) {
                 throw new IllegalArgumentException("Jurusan is required");
             }
-            mahasiswa.setIdJurusan(safeParseInt(idJurusanStr, "ID Jurusan"));
+            mahasiswa.setIdJurusan(Integer.parseInt(idJurusanStr.trim()));
             
-            // 3. ID Dosen (optional)
-            String idDosenStr = request.getParameter("idDosen");
-            System.out.println("DEBUG: idDosen = [" + idDosenStr + "]");
-            if (idDosenStr != null && !idDosenStr.trim().isEmpty()) {
-                mahasiswa.setIdDosen(safeParseInt(idDosenStr, "ID Dosen"));
-            }
-            
-            // 4. NIM (required)
+            // NIM (required)
             String nim = request.getParameter("nim");
-            System.out.println("DEBUG: nim = [" + nim + "]");
             if (nim == null || nim.trim().isEmpty()) {
                 throw new IllegalArgumentException("NIM is required");
             }
             mahasiswa.setNim(nim.trim());
             
-            // 5. Nama (required)
+            // Nama (required)
             String namaMahasiswa = request.getParameter("namaMahasiswa");
-            System.out.println("DEBUG: namaMahasiswa = [" + namaMahasiswa + "]");
             if (namaMahasiswa == null || namaMahasiswa.trim().isEmpty()) {
                 throw new IllegalArgumentException("Nama Mahasiswa is required");
             }
             mahasiswa.setNamaMahasiswa(namaMahasiswa.trim());
             
-            // 6. Email (required)
+            // Email (required)
             String email = request.getParameter("email");
-            System.out.println("DEBUG: email = [" + email + "]");
             if (email == null || email.trim().isEmpty()) {
                 throw new IllegalArgumentException("Email is required");
             }
             mahasiswa.setEmail(email.trim());
             
-            // 7. Telepon (optional)
+            // Telepon (optional)
             String telepon = request.getParameter("telepon");
             mahasiswa.setTelepon(telepon != null ? telepon.trim() : "");
             
-            // 8. Alamat (optional)
+            // Alamat (optional)
             String alamat = request.getParameter("alamat");
             mahasiswa.setAlamat(alamat != null ? alamat.trim() : "");
             
-            // 9. Jenis Kelamin (required)
+            // Jenis Kelamin
             String jenisKelamin = request.getParameter("jenisKelamin");
-            System.out.println("DEBUG: jenisKelamin = [" + jenisKelamin + "]");
             if (jenisKelamin != null && !jenisKelamin.trim().isEmpty()) {
                 mahasiswa.setJenisKelamin(jenisKelamin.charAt(0));
             } else {
-                mahasiswa.setJenisKelamin('L'); // Default
+                mahasiswa.setJenisKelamin('L');
             }
             
-            // 10. Tanggal Lahir (optional)
+            // Tanggal Lahir (optional)
             String tanggalLahir = request.getParameter("tanggalLahir");
             mahasiswa.setTanggalLahir(tanggalLahir != null ? tanggalLahir.trim() : "");
             
-            // 11. Tahun Masuk (required)
+            // Tahun Masuk
             String tahunMasukStr = request.getParameter("tahunMasuk");
-            System.out.println("DEBUG: tahunMasuk = [" + tahunMasukStr + "]");
             if (tahunMasukStr != null && !tahunMasukStr.trim().isEmpty()) {
-                mahasiswa.setTahunMasuk(safeParseInt(tahunMasukStr, "Tahun Masuk"));
+                mahasiswa.setTahunMasuk(Integer.parseInt(tahunMasukStr.trim()));
             } else {
                 mahasiswa.setTahunMasuk(2023);
             }
             
-            // 12. Semester Aktif
+            // Semester Aktif
             String semesterAktifStr = request.getParameter("semesterAktif");
-            System.out.println("DEBUG: semesterAktif = [" + semesterAktifStr + "]");
             if (semesterAktifStr != null && !semesterAktifStr.trim().isEmpty()) {
-                mahasiswa.setSemesterAktif(safeParseInt(semesterAktifStr, "Semester Aktif"));
+                mahasiswa.setSemesterAktif(Integer.parseInt(semesterAktifStr.trim()));
             } else {
                 mahasiswa.setSemesterAktif(1);
             }
             
-            // 13. IPK (optional)
+            // IPK (optional)
             String ipkStr = request.getParameter("ipk");
-            System.out.println("DEBUG: ipk = [" + ipkStr + "]");
             if (ipkStr != null && !ipkStr.trim().isEmpty()) {
-                mahasiswa.setIpk(safeParseDouble(ipkStr, "IPK"));
+                String normalized = ipkStr.trim().replace(",", ".");
+                mahasiswa.setIpk(Double.parseDouble(normalized));
             } else {
                 mahasiswa.setIpk(0.0);
             }
             
-            // 14. Status
+            // Status
             String status = request.getParameter("status");
-            System.out.println("DEBUG: status = [" + status + "]");
             if (status != null && !status.trim().isEmpty()) {
                 mahasiswa.setStatus(status.trim());
             } else {
                 mahasiswa.setStatus("Aktif");
             }
             
-            System.out.println("DEBUG: All fields parsed successfully, calling DAO...");
-            
             boolean success = mahasiswaDAO.updateMahasiswa(mahasiswa);
             
             if (success) {
-                System.out.println("DEBUG: Update successful!");
                 request.getSession().setAttribute("message", "Mahasiswa berhasil diupdate!");
                 request.getSession().setAttribute("messageType", "success");
             } else {
-                System.out.println("DEBUG: Update failed in DAO");
                 request.getSession().setAttribute("message", "Gagal mengupdate mahasiswa!");
                 request.getSession().setAttribute("messageType", "error");
             }
             
         } catch (Exception e) {
-            System.err.println("ERROR in updateMahasiswa: " + e.getClass().getName() + ": " + e.getMessage());
             e.printStackTrace();
             request.getSession().setAttribute("message", "Error: " + e.getMessage());
             request.getSession().setAttribute("messageType", "error");
         }
         
         response.sendRedirect(request.getContextPath() + "/mahasiswa");
-    }
-    
-    // Helper method untuk safe integer parsing
-    private int safeParseInt(String value, String fieldName) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException(fieldName + " cannot be empty");
-        }
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(fieldName + " must be a valid number: " + value);
-        }
-    }
-    
-    // Helper method untuk safe double parsing (handle comma as decimal separator)
-    private double safeParseDouble(String value, String fieldName) {
-        if (value == null || value.trim().isEmpty()) {
-            return 0.0;
-        }
-        try {
-            // Replace comma with dot for locales that use comma as decimal separator
-            String normalized = value.trim().replace(",", ".");
-            return Double.parseDouble(normalized);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(fieldName + " must be a valid number: " + value);
-        }
     }
     
     private void deleteMahasiswa(HttpServletRequest request, HttpServletResponse response) 
@@ -386,19 +331,19 @@ public class MahasiswaServlet extends HttpServlet {
             boolean success = mahasiswaDAO.deleteMahasiswa(id);
             
             if (success) {
-                request.setAttribute("message", "Mahasiswa berhasil dihapus!");
-                request.setAttribute("messageType", "success");
+                request.getSession().setAttribute("message", "Mahasiswa berhasil dihapus!");
+                request.getSession().setAttribute("messageType", "success");
             } else {
-                request.setAttribute("message", "Gagal menghapus mahasiswa!");
-                request.setAttribute("messageType", "error");
+                request.getSession().setAttribute("message", "Gagal menghapus mahasiswa!");
+                request.getSession().setAttribute("messageType", "error");
             }
             
         } catch (Exception e) {
-            request.setAttribute("message", "Error: " + e.getMessage());
-            request.setAttribute("messageType", "error");
+            request.getSession().setAttribute("message", "Error: " + e.getMessage());
+            request.getSession().setAttribute("messageType", "error");
         }
         
-        response.sendRedirect(request.getContextPath() + "/mahasiswa?action=list");
+        response.sendRedirect(request.getContextPath() + "/mahasiswa");
     }
     
     private void searchMahasiswa(HttpServletRequest request, HttpServletResponse response) 
