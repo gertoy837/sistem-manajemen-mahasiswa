@@ -14,43 +14,70 @@ import com.universitas.model.User;
 public class UserDAO {
     
     /**
-     * Autentikasi user berdasarkan username dan password
+     * Validasi login user - cek password plain text dulu, jika tidak cocok coba dengan hash
      */
-    public User authenticate(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-        Connection conn = null;
+    public User validateLogin(String username, String password) {
+        // Query untuk mengambil user berdasarkan username
+        String sql = "SELECT * FROM users WHERE username = ?";
         
-        try {
-            conn = DatabaseConfig.getConnection();
-            if (conn == null) {
-                System.err.println("ERROR: Database connection is null!");
-                return null;
-            }
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            System.out.println("DEBUG: Attempting login for username: " + username);
+            
             pstmt.setString(1, username);
-            pstmt.setString(2, password);
-            
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                User user = new User();
-                user.setIdUser(rs.getInt("id_user"));
-                user.setUsername(rs.getString("username"));
-                user.setNamaLengkap(rs.getString("nama_lengkap"));
-                user.setEmail(rs.getString("email"));
-                user.setRole(rs.getString("role"));
-                rs.close();
-                pstmt.close();
-                DatabaseConfig.closeConnection(conn);
-                return user;
+                String storedPassword = rs.getString("password");
+                System.out.println("DEBUG: User found, checking password...");
+                
+                // Cek password - bisa plain text atau hashed
+                boolean passwordMatch = false;
+                
+                // Cek plain text password dulu
+                if (storedPassword != null && storedPassword.equals(password)) {
+                    passwordMatch = true;
+                    System.out.println("DEBUG: Plain text password match!");
+                }
+                
+                // Jika tidak cocok, coba dengan MD5 hash
+                if (!passwordMatch) {
+                    String hashedInput = hashMD5(password);
+                    if (storedPassword != null && storedPassword.equals(hashedInput)) {
+                        passwordMatch = true;
+                        System.out.println("DEBUG: MD5 hashed password match!");
+                    }
+                }
+                
+                // Jika tidak cocok, coba dengan SHA-256 hash
+                if (!passwordMatch) {
+                    String hashedInput = hashSHA256(password);
+                    if (storedPassword != null && storedPassword.equals(hashedInput)) {
+                        passwordMatch = true;
+                        System.out.println("DEBUG: SHA-256 hashed password match!");
+                    }
+                }
+                
+                if (passwordMatch) {
+                    User user = new User();
+                    user.setIdUser(rs.getInt("id_user"));
+                    user.setUsername(rs.getString("username"));
+                    user.setNamaLengkap(rs.getString("nama_lengkap"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(rs.getString("role"));
+                    System.out.println("DEBUG: Login successful for user: " + username);
+                    return user;
+                } else {
+                    System.out.println("DEBUG: Password mismatch for user: " + username);
+                    System.out.println("DEBUG: Stored password hash: " + storedPassword);
+                }
+            } else {
+                System.out.println("DEBUG: User not found: " + username);
             }
-            rs.close();
-            pstmt.close();
-            DatabaseConfig.closeConnection(conn);
             
         } catch (SQLException e) {
-            System.err.println("Error autentikasi user: " + e.getMessage());
+            System.err.println("Error validating login: " + e.getMessage());
             e.printStackTrace();
         }
         
@@ -58,15 +85,49 @@ public class UserDAO {
     }
     
     /**
-     * Mendapatkan user berdasarkan username
+     * Hash password dengan MD5
      */
-    public User getUserByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username = ?";
+    private String hashMD5(String password) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : array) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Hash password dengan SHA-256
+     */
+    private String hashSHA256(String password) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] array = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : array) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Get user by ID
+     */
+    public User getUserById(int id) {
+        String sql = "SELECT * FROM users WHERE id_user = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setString(1, username);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
@@ -80,52 +141,10 @@ public class UserDAO {
             }
             
         } catch (SQLException e) {
-            System.err.println("Error mengambil user: " + e.getMessage());
+            System.err.println("Error getting user by ID: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return null;
-    }
-    
-    /**
-     * Menambah user baru
-     */
-    public boolean addUser(User user) {
-        String sql = "INSERT INTO users (username, password, nama_lengkap, email, role) VALUES (?, ?, ?, ?, ?)";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, user.getUsername());
-            pstmt.setString(2, user.getPassword());
-            pstmt.setString(3, user.getNamaLengkap());
-            pstmt.setString(4, user.getEmail());
-            pstmt.setString(5, user.getRole() != null ? user.getRole() : "user");
-            
-            return pstmt.executeUpdate() > 0;
-            
-        } catch (SQLException e) {
-            System.err.println("Error menambah user: " + e.getMessage());
-            return false;
-        }
-    }
-    
-    /**
-     * Update password user
-     */
-    public boolean updatePassword(int idUser, String newPassword) {
-        String sql = "UPDATE users SET password = ? WHERE id_user = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, newPassword);
-            pstmt.setInt(2, idUser);
-            
-            return pstmt.executeUpdate() > 0;
-            
-        } catch (SQLException e) {
-            System.err.println("Error update password: " + e.getMessage());
-            return false;
-        }
     }
 }

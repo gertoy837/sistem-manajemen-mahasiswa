@@ -12,10 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-/**
- * Servlet untuk menangani login dan logout
- */
-@WebServlet(urlPatterns = {"/login", "/logout"})
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     
     private UserDAO userDAO;
@@ -29,26 +26,14 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        String path = request.getServletPath();
-        
-        if ("/logout".equals(path)) {
-            // Handle logout
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.invalidate();
-            }
-            response.sendRedirect(request.getContextPath() + "/login");
-        } else {
-            // Cek jika sudah login
-            HttpSession session = request.getSession(false);
-            if (session != null && session.getAttribute("user") != null) {
-                response.sendRedirect(request.getContextPath() + "/dashboard");
-                return;
-            }
-            
-            // Tampilkan halaman login
-            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+        // Cek jika sudah login, redirect ke dashboard
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            response.sendRedirect(request.getContextPath() + "/dashboard");
+            return;
         }
+        
+        request.getRequestDispatcher("/views/login.jsp").forward(request, response);
     }
     
     @Override
@@ -58,7 +43,6 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
-        // Validasi input
         if (username == null || username.trim().isEmpty() || 
             password == null || password.trim().isEmpty()) {
             request.setAttribute("error", "Username dan password harus diisi!");
@@ -66,21 +50,19 @@ public class LoginServlet extends HttpServlet {
             return;
         }
         
-        // Autentikasi
-        User user = userDAO.authenticate(username.trim(), password);
+        User user = userDAO.validateLogin(username.trim(), password);
         
         if (user != null) {
-            // Login berhasil
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
+            session.setAttribute("userId", user.getIdUser());
             session.setAttribute("username", user.getUsername());
             session.setAttribute("namaLengkap", user.getNamaLengkap());
             session.setAttribute("role", user.getRole());
-            session.setMaxInactiveInterval(30 * 60); // 30 menit
+            session.setMaxInactiveInterval(30 * 60);
             
             response.sendRedirect(request.getContextPath() + "/dashboard");
         } else {
-            // Login gagal
             request.setAttribute("error", "Username atau password salah!");
             request.setAttribute("username", username);
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);

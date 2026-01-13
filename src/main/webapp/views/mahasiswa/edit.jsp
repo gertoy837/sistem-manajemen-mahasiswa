@@ -15,31 +15,19 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="brand d-flex align-items-center">
-            <div class="brand-icon me-3">
-                <i class="fas fa-graduation-cap text-white fa-lg"></i>
-            </div>
+            <div class="brand-icon me-3"><i class="fas fa-graduation-cap text-white fa-lg"></i></div>
             <span class="text-white fw-bold fs-5">UniManage</span>
         </div>
         <nav class="nav flex-column mt-3">
             <span class="text-white-50 small text-uppercase px-4 mb-2">Menu</span>
-            <a href="${pageContext.request.contextPath}/dashboard" class="nav-link">
-                <i class="fas fa-th-large"></i> Dashboard
-            </a>
-            <a href="${pageContext.request.contextPath}/mahasiswa" class="nav-link active">
-                <i class="fas fa-user-graduate"></i> Mahasiswa
-            </a>
-            <a href="${pageContext.request.contextPath}/matakuliah" class="nav-link">
-                <i class="fas fa-book"></i> Mata Kuliah
-            </a>
-            <a href="${pageContext.request.contextPath}/jurusan" class="nav-link">
-                <i class="fas fa-building"></i> Jurusan
-            </a>
+            <a href="${pageContext.request.contextPath}/dashboard" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="${pageContext.request.contextPath}/mahasiswa" class="nav-link active"><i class="fas fa-user-graduate"></i> Mahasiswa</a>
+            <a href="${pageContext.request.contextPath}/matakuliah" class="nav-link"><i class="fas fa-book"></i> Mata Kuliah</a>
+            <a href="${pageContext.request.contextPath}/jurusan" class="nav-link"><i class="fas fa-building"></i> Jurusan</a>
         </nav>
         <div class="sidebar-footer">
             <div class="d-flex align-items-center">
-                <div class="avatar avatar-circle bg-light text-primary me-2">
-                    ${fn:toUpperCase(fn:substring(sessionScope.username, 0, 1))}
-                </div>
+                <div class="avatar avatar-circle bg-light text-primary me-2">${fn:toUpperCase(fn:substring(sessionScope.username, 0, 1))}</div>
                 <div class="flex-grow-1">
                     <div class="text-white small fw-semibold">${sessionScope.username}</div>
                     <div class="text-white-50 small">${sessionScope.role}</div>
@@ -66,9 +54,7 @@
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <div class="avatar bg-primary me-3">
-                                ${fn:toUpperCase(fn:substring(mahasiswa.namaMahasiswa, 0, 1))}
-                            </div>
+                            <div class="avatar bg-primary me-3">${fn:toUpperCase(fn:substring(mahasiswa.namaMahasiswa, 0, 1))}</div>
                             <div>
                                 <h6 class="mb-0 fw-bold">${mahasiswa.namaMahasiswa}</h6>
                                 <small class="text-muted">NIM: ${mahasiswa.nim}</small>
@@ -158,9 +144,7 @@
                                 <hr>
                                 <div class="d-flex justify-content-end gap-2">
                                     <a href="${pageContext.request.contextPath}/mahasiswa" class="btn btn-light">Batal</a>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Update
-                                    </button>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Update</button>
                                 </div>
                             </form>
                         </div>

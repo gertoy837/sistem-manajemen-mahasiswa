@@ -32,15 +32,35 @@ public class AuthFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         
-        String path = httpRequest.getServletPath();
+        String uri = httpRequest.getRequestURI();
+        String contextPath = httpRequest.getContextPath();
+        String path = uri.substring(contextPath.length());
         
-        // Allow access to login page, static resources, and root
-        if (isPublicResource(path)) {
+        // Halaman publik yang tidak perlu login
+        boolean isPublicPage = path.equals("") || 
+                               path.equals("/") || 
+                               path.equals("/index.jsp") ||
+                               path.equals("/login") || 
+                               path.equals("/about") || 
+                               path.equals("/gallery") ||
+                               path.startsWith("/assets/") ||
+                               path.startsWith("/views/login") ||
+                               path.startsWith("/views/about") ||
+                               path.startsWith("/views/gallery") ||
+                               path.endsWith(".css") || 
+                               path.endsWith(".js") || 
+                               path.endsWith(".png") || 
+                               path.endsWith(".jpg") || 
+                               path.endsWith(".jpeg") || 
+                               path.endsWith(".gif") ||
+                               path.endsWith(".ico");
+        
+        if (isPublicPage) {
             chain.doFilter(request, response);
             return;
         }
         
-        // Check if user is logged in
+        // Cek session untuk halaman yang memerlukan login
         HttpSession session = httpRequest.getSession(false);
         boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
         
@@ -49,24 +69,8 @@ public class AuthFilter implements Filter {
             chain.doFilter(request, response);
         } else {
             // User belum login, redirect ke halaman login
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
+            httpResponse.sendRedirect(contextPath + "/login");
         }
-    }
-    
-    /**
-     * Cek apakah resource bisa diakses tanpa login
-     */
-    private boolean isPublicResource(String path) {
-        return path.equals("/login") || 
-               path.equals("/logout") ||
-               path.startsWith("/css/") ||
-               path.startsWith("/js/") ||
-               path.startsWith("/images/") ||
-               path.endsWith(".css") ||
-               path.endsWith(".js") ||
-               path.endsWith(".png") ||
-               path.endsWith(".jpg") ||
-               path.endsWith(".ico");
     }
     
     @Override
